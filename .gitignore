@@ -1,5 +1,6 @@
 .idea
-bot.session*
+bot.session
+bot.session-journal
 env.sh
 database.db
 
