@@ -53,9 +53,9 @@ handle = shell.handle
 
 @handle(command='start')
 async def start(event, first=None):
-    markup = client.build_reply_markup([Button.text(_('Profile', first.lang), resize=True),
+    markup = client.build_reply_markup([[Button.text(_('Profile', first.lang), resize=True),
                                         Button.text(_('Proxy', first.lang), resize=True)],
-                                        [Button.text(_('Help', first.lang), resize=True)])
+                                        [Button.text(_('Help', first.lang), resize=True)]])
     await event.reply(_('start_text', first.lang), buttons=markup)
 
 
