@@ -27,3 +27,7 @@ class User(Base):
     username = CharField(null=True)
     register_timestamp = IntegerField(default=time)
     subscription = IntegerField(null=True)
+
+
+db.connect()
+db.create_tables([Setting, User])
