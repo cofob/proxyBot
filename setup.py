@@ -1,3 +1,8 @@
+import os
+
+os.system('msgfmt locale/ru/LC_MESSAGES/bot.po -o locale/ru/LC_MESSAGES/bot.mo')
+
+
 def add(name: str, description: str = ''):
     with open('env.sh', 'a+') as file:
         file.write(f'export {name}='+input(f'{name}:\n\t' +
