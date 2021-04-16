@@ -121,6 +121,7 @@ class ClientShell:
             else:
                 obj = MessageFunc(func=func, regular=True, text='*', command=command, first=first, lower=False)
             self.message_handlers.append(obj)
+            return func
         return handler
 
     def inline(self, text=None, command=None, regular=False, first=False, lower=False):
@@ -137,6 +138,7 @@ class ClientShell:
             else:
                 obj = InlineFunc(func=func, command=command, regular=True, text='*', first=first, lower=False)
             self.inline_handlers.append(obj)
+            return func
         return handler
 
     def button(self, text=None, command=None, regular=False, first=False, lower=False):
@@ -153,4 +155,5 @@ class ClientShell:
             else:
                 obj = ButtonFunc(func=func, command=command, regular=True, text=b'*', first=first, lower=False)
             self.button_handlers.append(obj)
+            return func
         return handler
