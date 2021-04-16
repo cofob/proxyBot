@@ -1,4 +1,5 @@
 .idea
+bot.session*
 env.sh
 database.db
 
