@@ -21,12 +21,17 @@ class Setting(Base):
 
 
 class User(Base):
-    id = IntegerField(unique=True)
+    user_id = IntegerField(unique=True)
     firstname = CharField()
     lastname = CharField(null=True)
     username = CharField(null=True)
     register_timestamp = IntegerField(default=time)
+    balance = IntegerField(default=0)
     subscription = IntegerField(null=True)
+    action = CharField(null=True)
+    data = BlobField(null=True)
+    lang = CharField(default='ru')
+    token = TextField(null=True)
 
 
 db.connect()
