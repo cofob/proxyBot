@@ -26,13 +26,20 @@ class User(Base):
     lastname = CharField(null=True)
     username = CharField(null=True)
     register_timestamp = IntegerField(default=time)
-    balance = IntegerField(default=0)
-    subscription = IntegerField(null=True)
+    balance = FloatField(default=0)
+    subscription = IntegerField(default=0)
     action = CharField(null=True)
     data = BlobField(null=True)
     lang = CharField(default='ru')
     token = TextField(null=True)
 
 
+class Tariff(Base):
+    name = CharField(unique=True)
+    description = TextField()
+    add_time = IntegerField()
+    price = IntegerField()
+
+
 db.connect()
-db.create_tables([Setting, User])
+db.create_tables([Setting, User, Tariff])
