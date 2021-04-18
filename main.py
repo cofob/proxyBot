@@ -1,3 +1,5 @@
+import os
+
 from telethon import TelegramClient, Button
 from os import environ
 import logging
@@ -6,9 +8,11 @@ import gettext
 import models
 import secrets
 import pickle
+import requests
 import settings
 from Light_Qiwi import Qiwi
 import time
+import shutil
 from datetime import datetime
 
 
@@ -31,6 +35,13 @@ def init():
 
 def _(text, l='ru'):
     return langs[l](text)
+
+
+try:
+    shutil.rmtree('temp')
+except:
+    pass
+os.mkdir('temp')
 
 
 init()
@@ -63,6 +74,22 @@ async def before_invoke(event):
     user.lastname = chat.last_name
     user.save()
     return user
+
+
+def get_proxy(countries: str = 'all', types: str = 'all', level: str = 'all', speed: str = '0', count: str = '0'):
+    r = requests.get(f'https://proxoid.net/api/getProxy?key={pickle.loads(models.Setting.get(name="proxoid").value)}'
+                     f'&countries={countries}&types={types}&level={level}&speed={speed}&count={count}')
+    name = secrets.token_urlsafe(16)
+    path = f'temp/{name}.txt'
+    with open(path, 'w') as file:
+        file.write(r.text)
+    return path
+
+
+def get_proxy_count(countries: str = 'all', types: str = 'all', level: str = 'all', speed: str = '0', count: str = '0'):
+    r = requests.get(f'https://proxoid.net/api/getProxy?key={pickle.loads(models.Setting.get(name="proxoid").value)}'
+                     f'&countries={countries}&types={types}&level={level}&speed={speed}&count={count}&getCount=1')
+    return r.text
 
 
 shell = teleshell.ClientShell(client=client, message_first=before_invoke)
@@ -122,36 +149,46 @@ async def proxy(event, first=None):
         Button.text(_('HTTPS', first.lang), resize=True)],
         [Button.text(_('SOCKS4', first.lang), resize=True),
          Button.text(_('SOCKS5', first.lang), resize=True)],
+        [Button.text(_('Done', first.lang), resize=True)],
         [Button.text(_('Menu', first.lang), resize=True)]
     ])
-    await event.reply(_('proxy_text', first.lang), buttons=markup)
-
-
-async def proxy_country(event, first=None):
-    if first.subscription < time.time():
-        return await event.reply(_('subscription_end', first.lang))
-    first.action = 'proxy_country'
-    first.data = pickle.dumps({'type': event.text.lower()})
+    first.action = 'proxy_type'
+    first.data = pickle.dumps({})
     first.save()
-    markup = client.build_reply_markup([[Button.text(settings.countries[i], resize=True),
-                                         Button.text(settings.countries[i+1], resize=True)]
-                                        for i in range(0, len(settings.countries), 2)] +
-                                       [[Button.text(_('Menu', first.lang), resize=True)]])
-    await event.reply(_('proxy_country_text', first.lang), buttons=markup)
+    await event.reply(_('proxy_type_text', first.lang).format(types=_('all', first.lang)), buttons=markup)
 
 
-async def proxy_count(event, first=None):
+async def proxy_type(event, first=None):
     if first.subscription < time.time():
         return await event.reply(_('subscription_end', first.lang))
-    if first.action != 'proxy_country':
-        return await did_not_understand(event, first)
-    markup = client.build_reply_markup([[Button.text(_('Cancel', first.lang), resize=True)]])
     data = pickle.loads(first.data)
-    data['country'] = event.text.lower()
+    data['types'] = data.get('types', [])
+    t = event.text.lower()
+    if t in data['types']:
+        data['types'].remove(t)
+    else:
+        data['types'].append(t)
     first.data = pickle.dumps(data)
-    first.action = 'proxy_count'
     first.save()
-    await event.reply(_('proxy_count_text', first.lang).format(count=10), buttons=markup)
+    types_text = ', '.join(data['types']) if data['types'] and len(data['types']) < 4 else _('all', first.lang)
+    await event.reply(_('proxy_type_text', first.lang).format(types=types_text))
+
+
+async def proxy_anonymous(event, first=None):
+    if first.subscription < time.time():
+        return await event.reply(_('subscription_end', first.lang))
+    data = pickle.loads(first.data)
+    data['anonymous'] = data.get('anonymous', [])
+    t = event.text.lower()
+    if t in data['anonymous']:
+        data['anonymous'].remove(t)
+    else:
+        data['anonymous'].append(t)
+    first.data = pickle.dumps(data)
+    first.save()
+    anonymous_text = ', '.join(data['anonymous']) if data['anonymous'] and len(data['anonymous']) < 3\
+        else _('all', first.lang)
+    await event.reply(_('proxy_anonymous_text', first.lang).format(anonymous=anonymous_text))
 
 
 async def _api(event, first=None):
@@ -255,11 +292,7 @@ async def add_tariff(event, first=None):
 
 
 async def text(event, first=None):
-    if first.action == 'proxy_count':
-        data = pickle.loads(first.data)
-        await event.reply(_('proxy_done_text', first.lang))
-        await menu(event, first)
-    elif first.action == 'add_balance_id':
+    if first.action == 'add_balance_id':
         data = pickle.loads(first.data)
         data['id'] = int(event.text)
         first.data = pickle.dumps(data)
@@ -330,6 +363,117 @@ async def text(event, first=None):
         )
         t.save()
         await event.reply(_('add_tariff_done', first.lang))
+    elif first.action == 'proxy_type' and event.text == _('Done', first.lang):
+        first.action = 'proxy_anonymous'
+        data = pickle.loads(first.data)
+        data['types'] = data.get('types', [])
+        if len(data['types']) == 0:
+            data['types'] = 'all'
+        else:
+            data['types'] = ','.join(data['types'])
+        first.data = pickle.dumps(data)
+        first.save()
+        markup = client.build_reply_markup([
+            [Button.text(_('Transparent', first.lang), resize=True),
+             Button.text(_('Anonymous', first.lang), resize=True)],
+            [Button.text(_('Elite', first.lang), resize=True)],
+            [Button.text(_('Done', first.lang), resize=True)],
+            [Button.text(_('Menu', first.lang), resize=True)]
+        ])
+        await event.reply(_('proxy_anonymous_text', first.lang).format(anonymous=_('all', first.lang)), buttons=markup)
+    elif first.action == 'proxy_anonymous' and event.text == _('Done', first.lang):
+        first.action = 'proxy_country'
+        data = pickle.loads(first.data)
+        data['anonymous'] = data.get('anonymous', [])
+        if len(data['anonymous']) == 0:
+            data['anonymous'] = 'all'
+        else:
+            data['anonymous'] = ','.join(data['anonymous'])\
+                .replace(_('Elite', first.lang).lower(), 'high')\
+                .replace(_('Anonymous', first.lang).lower(), 'anonymous')\
+                .replace(_('Transparent', first.lang).lower(), 'transparent')
+        first.data = pickle.dumps(data)
+        first.save()
+        markup = client.build_reply_markup([[Button.text(_('Done', first.lang), resize=True)],
+                                            [Button.text(_('Menu', first.lang), resize=True)]])
+        await event.reply(_('proxy_country_text', first.lang).format(countries=_('all', first.lang)), buttons=markup)
+    elif first.action == 'proxy_count':
+        data = pickle.loads(first.data)
+        data['count'] = data.get('count', 0)
+        if event.text == _('Done', first.lang):
+            first.data = pickle.dumps(data)
+            first.action = 'proxy_speed'
+            first.save()
+            await event.reply(_('proxy_speed', first.lang).format(speed=_('all', first.lang)))
+        else:
+            try:
+                i = int(event.text)
+                if i < 0:
+                    raise ValueError
+                data['count'] = i
+                first.data = pickle.dumps(data)
+                first.action = 'proxy_speed'
+                first.save()
+                await event.reply(_('proxy_speed', first.lang).format(speed=_('all', first.lang)))
+            except ValueError:
+                await event.reply(_('value_error', first.lang))
+    elif first.action == 'proxy_speed':
+        if first.subscription < time.time():
+            return await event.reply(_('subscription_end', first.lang))
+        data = pickle.loads(first.data)
+        data['speed'] = data.get('speed', 0)
+        if event.text == _('Done', first.lang):
+            first.data = None
+            first.action = None
+            first.save()
+            path = get_proxy(data['country'], data['types'], data['anonymous'], data['speed'], data['count'])
+            await event.reply(_('proxy_done', first.lang))
+            await client.send_file(first.user_id, path)
+            os.remove(path)
+            await menu(event, first)
+        else:
+            try:
+                i = int(event.text)
+                if i < 0:
+                    raise ValueError
+                data['speed'] = i
+                first.data = None
+                first.action = None
+                first.save()
+                print(data)
+                await event.reply(_('proxy_done', first.lang))
+                await menu(event, first)
+            except ValueError:
+                await event.reply(_('value_error', first.lang))
+    elif first.action == 'proxy_country':
+        data = pickle.loads(first.data)
+        data['country'] = data.get('country', [])
+        if event.text == _('Done', first.lang):
+            if len(data['country']) == 0:
+                data['country'] = 'all'
+            else:
+                data['country'] = ','.join(data['country'])
+            first.data = pickle.dumps(data)
+            first.action = 'proxy_count'
+            first.save()
+
+            markup = client.build_reply_markup([[Button.text(_('Done', first.lang), resize=True)],
+                                                [Button.text(_('Menu', first.lang), resize=True)]])
+            count = get_proxy_count(data['country'], data['types'], data['anonymous'])
+            await event.reply(_('proxy_count_text', first.lang).format(count=count, buttons=markup))
+        elif event.text.upper() in settings.countries:
+            t = event.text.lower()
+            if t in data['country']:
+                data['country'].remove(t)
+            else:
+                data['country'].append(t)
+            first.data = pickle.dumps(data)
+            first.save()
+            country_text = ', '.join(data['country']) if \
+                data['country'] and len(data['country']) < len(settings.countries) else _('all', first.lang)
+            await event.reply(_('proxy_country_text', first.lang).format(countries=country_text))
+        else:
+            await event.reply(_('not_found', first.lang))
     else:
         await event.reply(_('did_not_understand', first.lang))
 
@@ -385,17 +529,18 @@ add_text_handler(cancel, 'Cancel')
 add_text_handler(profile, 'Profile')
 add_text_handler(menu, 'Menu')
 add_text_handler(proxy, 'Proxy')
-add_text_handler(proxy_country, 'HTTP')
-add_text_handler(proxy_country, 'HTTPS')
-add_text_handler(proxy_country, 'SOCKS4')
-add_text_handler(proxy_country, 'SOCKS5')
+add_text_handler(proxy_type, 'HTTP')
+add_text_handler(proxy_type, 'HTTPS')
+add_text_handler(proxy_type, 'SOCKS4')
+add_text_handler(proxy_type, 'SOCKS5')
+add_text_handler(proxy_anonymous, 'Elite')
+add_text_handler(proxy_anonymous, 'Transparent')
+add_text_handler(proxy_anonymous, 'Anonymous')
 add_text_handler(top_up_balance, 'Top up balance')
 add_text_handler(top_up_balance_qiwi, 'QIWI')
 add_text_handler(buy, 'Buy')
 add_text_handler(_api, 'API')
 add_text_handler(generate_token, 'Generate token')
-for i in settings.countries:
-    add_text_handler(proxy_count, i)
 handle()(text)
 
 
