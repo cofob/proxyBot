@@ -1,4 +1,5 @@
 .idea
+temp
 bot.session
 bot.session-journal
 env.sh

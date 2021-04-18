@@ -1,6 +1,5 @@
 import os
-
-from telethon import TelegramClient, Button
+from telethon import TelegramClient, Button, events
 from os import environ
 import logging
 import teleshell
@@ -14,7 +13,6 @@ from Light_Qiwi import Qiwi
 import time
 import shutil
 from datetime import datetime
-
 
 logging.basicConfig(format='[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s',
                     level=logging.INFO)
@@ -43,7 +41,6 @@ except:
     pass
 os.mkdir('temp')
 
-
 init()
 
 client = TelegramClient('bot', int(environ['API_ID']), environ['API_HASH']).start(bot_token=environ['BOT_TOKEN'])
@@ -59,8 +56,8 @@ def to_datetime(ts, format='%Y-%m-%d %H:%M:%S'):
 
 
 def to_curr_datetime(ts):
-    days = int(ts/86400)
-    hours = int(ts/3600)
+    days = int(ts / 86400)
+    hours = int(ts / 3600)
     return f'{days}d {hours}h'
 
 
@@ -99,18 +96,9 @@ button = shell.button
 
 async def start(event, first=None):
     markup = client.build_reply_markup([[Button.text(_('Profile', first.lang), resize=True),
-                                        Button.text(_('Proxy', first.lang), resize=True)],
+                                         Button.text(_('Proxy', first.lang), resize=True)],
                                         [Button.text(_('Help', first.lang), resize=True)]])
     await event.reply(_('start_text', first.lang), buttons=markup)
-
-
-async def help(event, first=None):
-    markup = client.build_reply_markup([
-        [
-            Button.text(_('Menu', first.lang), resize=True)
-        ]
-    ])
-    await event.reply(_('help_text', first.lang), buttons=markup)
 
 
 async def menu(event, first=None):
@@ -118,9 +106,60 @@ async def menu(event, first=None):
     first.data = None
     first.save()
     markup = client.build_reply_markup([[Button.text(_('Profile', first.lang), resize=True),
-                                       Button.text(_('Proxy', first.lang), resize=True)],
-                                        [Button.text(_('Buy', first.lang), resize=True)]])
+                                         Button.text(_('Proxy', first.lang), resize=True)],
+                                        [Button.text(_('Buy', first.lang), resize=True),
+                                         Button.text(_('Help', first.lang), resize=True), ]])
+    if first.user_id == settings.owner:
+        markup = client.build_reply_markup([[Button.text(_('Profile', first.lang), resize=True),
+                                             Button.text(_('Proxy', first.lang), resize=True)],
+                                            [Button.text(_('Buy', first.lang), resize=True),
+                                             Button.text(_('Help', first.lang), resize=True)],
+                                            [Button.text(_('Admin', first.lang), resize=True)]])
     await client.send_message(first.user_id, _('menu_text', first.lang), buttons=markup)
+
+
+async def _help(event, first=None):
+    markup = client.build_reply_markup([
+        [
+            Button.text(_('Terms of use', first.lang), resize=True)
+        ],
+        [
+            Button.text(_('Menu', first.lang), resize=True),
+        ]
+    ])
+    await event.reply(_('help_text', first.lang).format(owner=pickle.loads(models.Setting.get(name="owner").value),
+                                                        name=pickle.loads(models.Setting.get(name="shop_name").value)),
+                      buttons=markup)
+
+
+async def admin(event, first=None):
+    if first.user_id != settings.owner:
+        return await event.reply(_('owner_only', first.lang))
+    markup = client.build_reply_markup([
+        [
+            Button.text(_('Create tariff', first.lang), resize=True),
+            Button.text(_('Delete tariff', first.lang), resize=True),
+        ],
+        [
+            Button.text(_('Add balance', first.lang), resize=True),
+        ],
+        [
+            Button.text(_('Set', first.lang), resize=True),
+        ],
+        [
+            Button.text(_('Menu', first.lang), resize=True),
+        ]
+    ])
+    await event.reply(_('admin_text'), buttons=markup)
+
+
+async def terms_of_use(event, first=None):
+    markup = client.build_reply_markup([
+        [
+            Button.text(_('Menu', first.lang), resize=True),
+        ]
+    ])
+    await event.reply(_('terms_of_use_text', first.lang), buttons=markup)
 
 
 async def profile(event, first=None):
@@ -146,7 +185,7 @@ async def proxy(event, first=None):
         return await event.reply(_('subscription_end', first.lang))
     markup = client.build_reply_markup([
         [Button.text(_('HTTP', first.lang), resize=True),
-        Button.text(_('HTTPS', first.lang), resize=True)],
+         Button.text(_('HTTPS', first.lang), resize=True)],
         [Button.text(_('SOCKS4', first.lang), resize=True),
          Button.text(_('SOCKS5', first.lang), resize=True)],
         [Button.text(_('Done', first.lang), resize=True)],
@@ -186,7 +225,7 @@ async def proxy_anonymous(event, first=None):
         data['anonymous'].append(t)
     first.data = pickle.dumps(data)
     first.save()
-    anonymous_text = ', '.join(data['anonymous']) if data['anonymous'] and len(data['anonymous']) < 3\
+    anonymous_text = ', '.join(data['anonymous']) if data['anonymous'] and len(data['anonymous']) < 3 \
         else _('all', first.lang)
     await event.reply(_('proxy_anonymous_text', first.lang).format(anonymous=anonymous_text))
 
@@ -220,7 +259,7 @@ async def top_up_balance_qiwi(event, first=None):
                                                                             f'form/99?extra[%27account%27]='
                                                                             f'{settings.qiwi_phone}&currency=643&extra'
                                                                             f'[%27comment%27]={first.user_id}'),
-                                                                       buttons=markup)
+                      buttons=markup)
 
 
 async def cancel(event, first=None):
@@ -291,6 +330,37 @@ async def add_tariff(event, first=None):
     await event.reply(_('add_tariff_name', first.lang))
 
 
+async def get_po(event, first=None):
+    if first.user_id != settings.owner:
+        return await event.reply(_('owner_only', first.lang))
+    await client.send_file(first.user_id, 'locale/ru/LC_MESSAGES/bot.po')
+
+
+async def upload_po(event, first=None):
+    if first.user_id != settings.owner:
+        return await event.reply(_('owner_only', first.lang))
+    os.remove('locale/ru/LC_MESSAGES/bot.po')
+    await event.download_media('locale/ru/LC_MESSAGES/bot.po')
+    await event.reply('done')
+
+
+async def install_po(event, first=None):
+    if first.user_id != settings.owner:
+        return await event.reply(_('owner_only', first.lang))
+    os.remove('locale/ru/LC_MESSAGES/bot.mo')
+    os.system('msgfmt locale/ru/LC_MESSAGES/bot.po -o locale/ru/LC_MESSAGES/bot.mo')
+    await event.reply('done')
+
+
+async def delete_tariff(event, first=None):
+    if first.user_id != settings.owner:
+        return await event.reply(_('owner_only', first.lang))
+    first.action = 'delete_tariff_name'
+    first.data = None
+    first.save()
+    await event.reply(_('delete_tariff_name', first.lang))
+
+
 async def text(event, first=None):
     if first.action == 'add_balance_id':
         data = pickle.loads(first.data)
@@ -328,6 +398,13 @@ async def text(event, first=None):
         t.value = pickle.dumps(data['value'])
         t.save()
         await event.reply(_('set_done', first.lang))
+    elif first.action == 'delete_tariff_name':
+        t = models.Tariff.get(name=event.text)
+        t.delete_instance()
+        first.data = None
+        first.action = None
+        first.save()
+        await event.reply(_('delete_tariff_done', first.lang))
     elif first.action == 'add_tariff_name':
         data = pickle.loads(first.data)
         data['name'] = event.text
@@ -388,9 +465,9 @@ async def text(event, first=None):
         if len(data['anonymous']) == 0:
             data['anonymous'] = 'all'
         else:
-            data['anonymous'] = ','.join(data['anonymous'])\
-                .replace(_('Elite', first.lang).lower(), 'high')\
-                .replace(_('Anonymous', first.lang).lower(), 'anonymous')\
+            data['anonymous'] = ','.join(data['anonymous']) \
+                .replace(_('Elite', first.lang).lower(), 'high') \
+                .replace(_('Anonymous', first.lang).lower(), 'anonymous') \
                 .replace(_('Transparent', first.lang).lower(), 'transparent')
         first.data = pickle.dumps(data)
         first.save()
@@ -454,13 +531,11 @@ async def text(event, first=None):
             else:
                 data['country'] = ','.join(data['country'])
             first.data = pickle.dumps(data)
-            first.action = 'proxy_count'
+            first.action = 'proxy_speed'
             first.save()
-
             markup = client.build_reply_markup([[Button.text(_('Done', first.lang), resize=True)],
                                                 [Button.text(_('Menu', first.lang), resize=True)]])
-            count = get_proxy_count(data['country'], data['types'], data['anonymous'])
-            await event.reply(_('proxy_count_text', first.lang).format(count=count, buttons=markup))
+            await event.reply(_('proxy_speed', first.lang).format(speed=_('all', first.lang)))
         elif event.text.upper() in settings.countries:
             t = event.text.lower()
             if t in data['country']:
@@ -515,16 +590,19 @@ try:
 except NameError:
     pass
 
-
 # ADD HANDLERS
 add_command_handler(cancel, 'cancel')
 add_command_handler(start, 'start')
-add_command_handler(help, 'help')
+add_command_handler(_help, 'help')
 add_command_handler(menu, 'menu')
 add_command_handler(_set, 'set')
 add_command_handler(_exit, 'exit')
+add_command_handler(admin, 'admin')
 add_command_handler(add_tariff, 'add_tariff')
 add_command_handler(add_balance, 'add_balance')
+add_command_handler(get_po, 'get_po')
+add_command_handler(install_po, 'install_po')
+add_command_handler(upload_po, 'upload_po')
 add_text_handler(cancel, 'Cancel')
 add_text_handler(profile, 'Profile')
 add_text_handler(menu, 'Menu')
@@ -541,8 +619,14 @@ add_text_handler(top_up_balance_qiwi, 'QIWI')
 add_text_handler(buy, 'Buy')
 add_text_handler(_api, 'API')
 add_text_handler(generate_token, 'Generate token')
+add_text_handler(_help, 'Help')
+add_text_handler(terms_of_use, 'Terms of use')
+add_text_handler(admin, 'Admin')
+add_text_handler(add_tariff, 'Create tariff')
+add_text_handler(delete_tariff, 'Delete tariff')
+add_text_handler(add_balance, 'Add balance')
+add_text_handler(_set, 'Set')
 handle()(text)
-
 
 try:
     api.start_threading()
