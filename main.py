@@ -57,7 +57,7 @@ def to_datetime(ts, format='%Y-%m-%d %H:%M:%S'):
 
 def to_curr_datetime(ts):
     days = int(ts / 86400)
-    hours = int(ts / 3600)
+    hours = int((ts-(86400*days)) / 3600)
     return f'{days}d {hours}h'
 
 
@@ -503,9 +503,12 @@ async def text(event, first=None):
             first.data = None
             first.action = None
             first.save()
-            path = get_proxy(data['country'], data['types'], data['anonymous'], data['speed'], data['count'])
+            path = get_proxy(data['country'], data['types'], data['anonymous'], data['speed'])
             await event.reply(_('proxy_done', first.lang))
-            await client.send_file(first.user_id, path)
+            try:
+                await client.send_file(first.user_id, path)
+            except:
+                await client.send_message(first.user_id, _('proxy_error', first.lang))
             os.remove(path)
             await menu(event, first)
         else:
@@ -585,6 +588,8 @@ try:
         amount = payment.amount
         comment = payment.comment
         user = models.User.get(user_id=comment)
+        requests.get(f'https://api.telegram.org/bot{environ["BOT_TOKEN"]}/sendMessage?chat_id={user.user_id}'
+                     f'&text={_("Мы получили оплату: {sum} rub").format(sum=amount)}')
         user.balance += amount
         user.save()
 except NameError:
