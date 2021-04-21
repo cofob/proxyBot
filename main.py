@@ -249,12 +249,21 @@ async def top_up_balance(event, first=None):
 
 
 async def top_up_balance_qiwi(event, first=None):
-    markup = client.build_reply_markup([[Button.text(_('Cancel', first.lang), resize=True)]])
+    markup = client.build_reply_markup([[Button.text(_('Check balance', first.lang), resize=True)],
+                                        [Button.text(_('Cancel', first.lang), resize=True)]])
     await event.reply(_('top_up_balance_qiwi_text', first.lang).format(link=f'https://qiwi.com/payment/'
                                                                             f'form/99?extra[%27account%27]='
                                                                             f'{settings.qiwi_phone}&currency=643&extra'
                                                                             f'[%27comment%27]={first.user_id}'),
                       buttons=markup)
+
+
+async def check_balance(event, first=None):
+    try:
+        qiwi_api.loop()
+    except:
+        pass
+    await event.reply(_('Checking...'))
 
 
 async def cancel(event, first=None):
@@ -612,6 +621,7 @@ add_text_handler(proxy_anonymous, 'Elite')
 add_text_handler(proxy_anonymous, 'Transparent')
 add_text_handler(proxy_anonymous, 'Anonymous')
 add_text_handler(top_up_balance, 'Top up balance')
+add_text_handler(check_balance, 'Check balance')
 add_text_handler(top_up_balance_qiwi, 'QIWI')
 add_text_handler(buy, 'Buy')
 add_text_handler(_api, 'API')
