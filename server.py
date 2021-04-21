@@ -45,4 +45,5 @@ def proxy(token):
     return ans
 
 
-app.run()
+if __name__ == '__main__':
+    app.run()
