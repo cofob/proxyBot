@@ -13,6 +13,9 @@ countries = ['russia', 'usa', 'ukraine', 'germany', 'china', 'belgia']
 def get_proxy(countries=None, types=None, level=None, speed=None, count=None):
     if not countries:
         countries = 'all'
+    countries = countries.upper()
+    if countries == 'ALL':
+        countries = 'all'
     if not types:
         types = 'all'
     if not level:
@@ -22,8 +25,8 @@ def get_proxy(countries=None, types=None, level=None, speed=None, count=None):
     if not count:
         count = 0
     r = requests.get(f'https://proxoid.net/api/getProxy?key={pickle.loads(models.Setting.get(name="proxoid").value)}'
-                     f'&countries={countries.upper()}&types={types.lower()}&level={level.lower()}'
-                     f'&speed={speed}&count={count}')
+                     f'&countries={countries}&types={types.lower()}&level={level.lower()}'
+                     f'&speed={int(speed)}&count={int(count)}')
     return r.text
 
 

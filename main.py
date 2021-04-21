@@ -69,8 +69,13 @@ async def before_invoke(event):
 
 
 def get_proxy(countries: str = 'all', types: str = 'all', level: str = 'all', speed: str = '0', count: str = '0'):
-    r = requests.get(f'https://proxoid.net/api/getProxy?key={pickle.loads(models.Setting.get(name="proxoid").value)}'
-                     f'&countries={countries}&types={types}&level={level}&speed={speed}&count={count}')
+    countries = countries.upper()
+    if countries == 'ALL':
+        countries = 'all'
+    url = f'https://proxoid.net/api/getProxy?key={pickle.loads(models.Setting.get(name="proxoid").value)}' \
+          f'&countries={countries}&types={types}&level={level}&speed={speed}&count={count}'
+    logging.info(url)
+    r = requests.get(url)
     name = secrets.token_urlsafe(16)
     path = f'temp/{name}.txt'
     with open(path, 'w') as file:
