@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-04-18 21:18+0700\n"
-"PO-Revision-Date: 2021-04-18 21:47+0700\n"
+"POT-Creation-Date: 2021-04-21 18:18+0700\n"
+"PO-Revision-Date: 2021-04-21 18:19+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -15,68 +15,73 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 "X-Poedit-SearchPath-0: main.py\n"
 
-#: main.py:99 main.py:109 main.py:114 main.py:244
+#: main.py:93 main.py:103 main.py:108 main.py:238
 msgid "Profile"
 msgstr "Профиль"
 
-#: main.py:100 main.py:110 main.py:115 main.py:245
+#: main.py:94 main.py:104 main.py:109 main.py:239
 msgid "Proxy"
 msgstr "Прокси"
 
-#: main.py:101 main.py:112 main.py:117
+#: main.py:95 main.py:106 main.py:111
 msgid "Help"
 msgstr "Помощь"
 
-#: main.py:102
+#: main.py:96
 msgid "start_text"
 msgstr "Привет! Я прокси бот, выдам вам любые прокси!"
 
-#: main.py:111 main.py:116 main.py:291
+#: main.py:105 main.py:110 main.py:294
 msgid "Buy"
 msgstr "Купить"
 
-#: main.py:118
+#: main.py:112
 msgid "Admin"
 msgstr "Админ панель"
 
-#: main.py:119
+#: main.py:113
 msgid "menu_text"
-msgstr "Отправлено меню"
+msgstr ""
+"Отправлено меню\n"
+"Воспользуйтесь кнопками ниже"
 
-#: main.py:125
+#: main.py:119
 msgid "Terms of use"
 msgstr "Правила использования"
 
-#: main.py:128 main.py:151 main.py:160 main.py:175 main.py:193 main.py:237
-#: main.py:253 main.py:437 main.py:454 main.py:516
+#: main.py:122 main.py:145 main.py:154 main.py:169 main.py:187 main.py:231
+#: main.py:247 main.py:462 main.py:479 main.py:544
 msgid "Menu"
 msgstr "Меню"
 
-#: main.py:131
+#: main.py:125
 msgid "help_text"
-msgstr "Тут помощь бота"
+msgstr ""
+"Название магаза: {name}\n"
+"Владелец: {owner}"
 
-#: main.py:138 main.py:303 main.py:309 main.py:318 main.py:327 main.py:336
+#: main.py:132 main.py:306 main.py:312 main.py:321 main.py:330 main.py:339
+#: main.py:345 main.py:353 main.py:361
 msgid "owner_only"
 msgstr "Только для администрации бота."
 
-#: main.py:141
+#: main.py:135
 msgid "Create tariff"
 msgstr "Создать тариф"
 
-#: main.py:142
+#: main.py:136
 msgid "Delete tariff"
 msgstr "Удалить тариф"
 
-#: main.py:145
+#: main.py:139
 msgid "Add balance"
 msgstr "Добавить баланс"
 
-#: main.py:148
+#: main.py:142
 msgid "Set"
 msgstr "Установить переменную"
 
-#: main.py:154
+#: main.py:148
 msgid "admin_text"
 msgstr ""
 "Добро пожаловать, хозяин!\n"
@@ -90,19 +95,19 @@ msgstr ""
 "\n"
 "Бота сделал @cofob"
 
-#: main.py:163
+#: main.py:157
 msgid "terms_of_use_text"
 msgstr "Правила использования бота тут."
 
-#: main.py:169
+#: main.py:163
 msgid "API"
 msgstr "API"
 
-#: main.py:172
+#: main.py:166
 msgid "Top up balance"
 msgstr "Пополнить баланс"
 
-#: main.py:178
+#: main.py:172
 msgid "profile_text"
 msgstr ""
 "Ваш ID: {id}\n"
@@ -110,93 +115,101 @@ msgstr ""
 "Подписка до: {ends}\n"
 "Дата регистрации: {register}"
 
-#: main.py:180 main.py:240
+#: main.py:174 main.py:234
 msgid "No"
 msgstr "Нет"
 
-#: main.py:186 main.py:203 main.py:219 main.py:478
+#: main.py:180 main.py:197 main.py:213 main.py:503
 msgid "subscription_end"
 msgstr "У вас нет подписки."
 
-#: main.py:188
+#: main.py:182
 msgid "HTTP"
 msgstr "HTTP"
 
-#: main.py:189
+#: main.py:183
 msgid "HTTPS"
 msgstr "HTTPS"
 
-#: main.py:190
+#: main.py:184
 msgid "SOCKS4"
 msgstr "SOCKS4"
 
-#: main.py:191
+#: main.py:185
 msgid "SOCKS5"
 msgstr "SOCKS5"
 
-#: main.py:192 main.py:422 main.py:436 main.py:440 main.py:453 main.py:459
-#: main.py:481 main.py:507 main.py:515
+#: main.py:186 main.py:447 main.py:461 main.py:465 main.py:478 main.py:484
+#: main.py:506 main.py:535 main.py:543
 msgid "Done"
 msgstr "Дальше"
 
-#: main.py:198 main.py:214
+#: main.py:192 main.py:208
 msgid "proxy_type_text"
 msgstr ""
 "Выберте тип прокси\n"
 "Текущее: {types}"
 
-#: main.py:198 main.py:213 main.py:230 main.py:439 main.py:455 main.py:463
-#: main.py:473 main.py:517 main.py:527
+#: main.py:192 main.py:207 main.py:224 main.py:464 main.py:480 main.py:488
+#: main.py:498 main.py:545 main.py:555
 msgid "all"
 msgstr "все"
 
-#: main.py:231 main.py:439
+#: main.py:225 main.py:464
 msgid "proxy_anonymous_text"
 msgstr ""
 "Выберете анонимность прокси\n"
 "Текущее: {anonymous}"
 
-#: main.py:236
+#: main.py:230
 msgid "Generate token"
 msgstr "Выпустить токен"
 
-#: main.py:239
+#: main.py:233
 msgid "api_text"
 msgstr "Ваш токен: {token}"
 
-#: main.py:248
+#: main.py:242
 msgid "generated_token_text"
 msgstr "Токен: {token}"
 
-#: main.py:252
+#: main.py:246
 msgid "QIWI"
 msgstr "QIWI"
 
-#: main.py:254
+#: main.py:248
 msgid "top_up_balance_text"
 msgstr "Выберете платёжку"
 
-#: main.py:258
+#: main.py:252
+msgid "Check balance"
+msgstr "Проверить пополнение"
+
+#: main.py:253
 msgid "Cancel"
 msgstr "Отменить"
 
-#: main.py:259
+#: main.py:254
 msgid "top_up_balance_qiwi_text"
 msgstr "Ссылка для пополнения: {link}"
 
-#: main.py:270
+#: main.py:266
+msgid "Checking..."
+msgstr "Обновляем..."
+
+#: main.py:273
 msgid "canceled_text"
 msgstr "Отменено"
 
-#: main.py:278 main.py:532
+#: main.py:281 main.py:560
 msgid "did_not_understand"
 msgstr "Я не понял вас."
 
-#: main.py:288
+#: main.py:291
 msgid "tariffs"
 msgstr "Тарифы"
 
-#: main.py:292
+#: main.py:295
 msgid "tariff_detailed"
 msgstr ""
 "Название: {name}\n"
@@ -204,103 +217,107 @@ msgstr ""
 "Время: {time}\n"
 "Цена: {price} RUB"
 
-#: main.py:298
+#: main.py:301
 msgid "select_tariff"
 msgstr "Выберете тариф"
 
-#: main.py:313
+#: main.py:316
 msgid "set_name"
 msgstr "Имя:"
 
-#: main.py:322
+#: main.py:325
 msgid "add_balance_id"
 msgstr "ID пользователя:"
 
-#: main.py:331
+#: main.py:334
 msgid "add_tariff_name"
 msgstr "Имя:"
 
-#: main.py:340
+#: main.py:365
 msgid "delete_tariff_name"
 msgstr "Имя тарифа:"
 
-#: main.py:350
+#: main.py:375
 msgid "add_balance_value"
 msgstr "Количество:"
 
-#: main.py:360
+#: main.py:385
 msgid "add_balance_done"
 msgstr "Пополнено!"
 
-#: main.py:367
+#: main.py:392
 msgid "set_value"
 msgstr "Значение:"
 
-#: main.py:379
+#: main.py:404
 msgid "set_done"
 msgstr "Успешно изменено!"
 
-#: main.py:386
+#: main.py:411
 msgid "delete_tariff_done"
 msgstr "Тариф удалён!"
 
-#: main.py:393
+#: main.py:418
 msgid "add_tariff_description"
 msgstr "Описание:"
 
-#: main.py:400
+#: main.py:425
 msgid "add_tariff_time"
 msgstr "Действие:"
 
-#: main.py:407
+#: main.py:432
 msgid "add_tariff_price"
 msgstr "Цена:"
 
-#: main.py:421
+#: main.py:446
 msgid "add_tariff_done"
 msgstr "Тариф добавлен!"
 
-#: main.py:433 main.py:450
+#: main.py:458 main.py:475
 msgid "Transparent"
 msgstr "Прозрачный"
 
-#: main.py:434 main.py:449
+#: main.py:459 main.py:474
 msgid "Anonymous"
 msgstr "Анонимный"
 
-#: main.py:435 main.py:448
+#: main.py:460 main.py:473
 msgid "Elite"
 msgstr "Элитный"
 
-#: main.py:455 main.py:528
+#: main.py:480 main.py:556
 msgid "proxy_country_text"
 msgstr ""
 "Выберете страну прокси (код страны)\n"
 "Текущее: {countries}"
 
-#: main.py:463 main.py:473 main.py:517
+#: main.py:488 main.py:498 main.py:545
 msgid "proxy_speed"
 msgstr ""
 "Выберте скорость прокси\n"
 "Текущее: {speed}"
 
-#: main.py:475 main.py:503
+#: main.py:500 main.py:531
 msgid "value_error"
 msgstr "Ошибка, проверьте значение!"
 
-#: main.py:486 main.py:500
+#: main.py:511 main.py:528
 msgid "proxy_done"
 msgstr "Вот ваши прокси:"
 
-#: main.py:530
+#: main.py:515
+msgid "proxy_error"
+msgstr "Таких прокси нет."
+
+#: main.py:558
 msgid "not_found"
 msgstr "Не найдено!"
 
-#: main.py:552
+#: main.py:580
 msgid "not_enough_balance"
 msgstr "Недостаточно баланса!"
 
-#: main.py:558
+#: main.py:586
 msgid "buyed"
 msgstr "Успешно приобретено!"
 
