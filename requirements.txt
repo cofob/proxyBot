@@ -1,5 +1,4 @@
 telethon
 requests
 peewee
-light_qiwi
 flask

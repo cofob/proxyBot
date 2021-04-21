@@ -9,7 +9,7 @@ import secrets
 import pickle
 import requests
 import settings
-from Light_Qiwi import Qiwi
+import qiwi
 import time
 import shutil
 from datetime import datetime
@@ -44,11 +44,6 @@ os.mkdir('temp')
 init()
 
 client = TelegramClient('bot', int(environ['API_ID']), environ['API_HASH']).start(bot_token=environ['BOT_TOKEN'])
-
-try:
-    api = Qiwi(pickle.loads(models.Setting.get(name='qiwi_token').value), settings.qiwi_phone)
-except:
-    pass
 
 
 def to_datetime(ts, format='%Y-%m-%d %H:%M:%S'):
@@ -582,18 +577,15 @@ async def buy_inline(event):
     await event.respond(_('buyed', user.lang))
 
 
-try:
-    @api.bind_check()
-    def receive(payment):
-        amount = payment.amount
-        comment = payment.comment
-        user = models.User.get(user_id=comment)
-        requests.get(f'https://api.telegram.org/bot{environ["BOT_TOKEN"]}/sendMessage?chat_id={user.user_id}'
-                     f'&text={_("Мы получили оплату: {sum} rub").format(sum=amount)}')
-        user.balance += amount
-        user.save()
-except NameError:
-    pass
+def qiwi_callback(tx):
+    amount = tx.amount
+    comment = tx.comment
+    user = models.User.get(user_id=comment)
+    requests.get(f'https://api.telegram.org/bot{environ["BOT_TOKEN"]}/sendMessage?chat_id={user.user_id}'
+                 f'&text={_("Мы получили оплату: {sum} rub").format(sum=amount)}')
+    user.balance += amount
+    user.save()
+
 
 # ADD HANDLERS
 add_command_handler(cancel, 'cancel')
@@ -634,8 +626,10 @@ add_text_handler(_set, 'Set')
 handle()(text)
 
 try:
-    api.start_threading()
-except NameError:
+    qiwi_api = qiwi.Qiwi(pickle.loads(models.Setting.get(name='qiwi_token').value), settings.qiwi_phone,
+                         callback=qiwi_callback)
+    qiwi_api.start_thread()
+except:
     pass
 
 client.start()
